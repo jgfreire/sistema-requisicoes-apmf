@@ -5,7 +5,7 @@ const { DatabaseSync } = require('node:sqlite');
 // O banco guarda apenas os usuários do sistema.
 const db = new DatabaseSync(path.join(__dirname, '..', 'apmf.db'));
 db.exec(`
-  PRAGMA journal_mode = WAL;
+  PRAGMA journal_mode = DELETE;
   CREATE TABLE IF NOT EXISTS usuarios (
     id INTEGER PRIMARY KEY, nome TEXT UNIQUE NOT NULL, salt TEXT NOT NULL, hash TEXT NOT NULL,
     admin INTEGER NOT NULL DEFAULT 0, ativo INTEGER NOT NULL DEFAULT 1);

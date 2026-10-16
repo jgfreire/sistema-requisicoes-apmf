@@ -1,5 +1,6 @@
 @echo off
-cd /d "%~dp0"
+rem pushd funciona tambem quando a pasta esta em um caminho de rede (\servidor...)
+pushd "%~dp0"
 where node >nul 2>nul || (echo Node.js nao encontrado. Instale em nodejs.org e tente de novo. & pause & exit /b 1)
 if not exist node_modules (
   echo Primeira execucao: instalando, aguarde...
