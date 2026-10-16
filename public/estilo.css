@@ -1,0 +1,23 @@
+:root { --cor:#8B7765; --escuro:#5E5043; --claro:#F3EFEA; --borda:#D9D0C6; }
+* { box-sizing: border-box; }
+body { margin:0; font-family: Segoe UI, Arial, sans-serif; color:#000; background:#fff; }
+header { display:flex; align-items:center; gap:20px; padding:14px 28px; border-bottom:3px solid var(--cor); }
+header h1 { margin:0; font-size:1.3rem; color:var(--escuro); flex:1; }
+main { padding:24px 28px; max-width:1300px; margin:0 auto; }
+button { background:var(--cor); color:#fff; border:0; border-radius:4px; padding:8px 16px; cursor:pointer; font-size:.95rem; }
+button:hover { background:var(--escuro); } button.sec { background:#fff; color:var(--escuro); border:1px solid var(--cor); }
+button.sec:hover { background:var(--claro); }
+input, select { padding:7px 8px; border:1px solid var(--borda); border-radius:4px; font-size:.95rem; width:100%; }
+.abas { display:flex; gap:6px; border-bottom:1px solid var(--borda); margin-bottom:20px; }
+.aba { background:none; color:var(--escuro); border-radius:4px 4px 0 0; } .aba.ativa { background:var(--cor); color:#fff; }
+.cartao { background:var(--claro); border-radius:6px; padding:18px; margin-bottom:18px; max-width:420px; }
+.cartao label { display:block; margin:10px 0 4px; font-size:.9rem; color:var(--escuro); }
+table { border-collapse:collapse; width:100%; margin:12px 0; }
+th { background:var(--cor); color:#fff; text-align:left; padding:8px; font-weight:600; }
+td { border-bottom:1px solid var(--borda); padding:4px; } td.t { padding:8px; }
+.msg { padding:10px 14px; border-radius:4px; margin:8px 0; } .ok { background:#E8F0E4; } .aviso { background:#F6EBD3; } .erro { background:#F3DCD8; }
+.linha { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin:10px 0; }
+h2 { color:var(--escuro); font-size:1.1rem; margin-top:26px; }
+.rolagem { overflow-x:auto; } textarea { width:100%; min-width:200px; padding:7px 8px; border:1px solid var(--borda); border-radius:4px; font:inherit; font-size:.9rem; resize:vertical; }
+td.arquivo { font-size:.85rem; color:var(--escuro); white-space:nowrap; } .passo { font-weight:600; color:var(--escuro); display:inline-block; margin:10px 0 0; }
+details summary { cursor:pointer; color:var(--escuro); font-weight:600; }
