@@ -14,11 +14,14 @@ function detectarCategoria(texto) {
   return CATEGORIAS.find((c) => t.includes(normalizar(c))) || '';
 }
 
+// Categoria lida do PDF -> nome oficial da lista (ignora diferenças de acento e maiúsculas).
+const nomeOficial = (lida) => CATEGORIAS.find((c) => normalizar(c) === normalizar(lida)) || lida;
+
 async function lerRequisicao(nomeArquivo, buffer) {
   try {
     const itens = (await local.ler(buffer)).map(({ generico, ...i }) => (generico
       ? { ...i, tipo: detectarTipo(i.justificativa), categoria: detectarCategoria(i.justificativa) }
-      : i));
+      : { ...i, categoria: nomeOficial(i.categoria) }));
     return { itens, aviso: '' };
   } catch {
     return {

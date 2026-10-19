@@ -80,4 +80,16 @@ app.put('/api/admin/usuarios/:id/ativo', logado, admin, (req, res) => { usuarios
 
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
+// Erros de envio (arquivos demais, arquivo grande demais) viram mensagens que a tela consegue mostrar.
+app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    const texto = {
+      LIMIT_UNEXPECTED_FILE: 'Você enviou arquivos demais. Envie no máximo 100 PDFs por vez.',
+      LIMIT_FILE_SIZE: 'Um dos arquivos passa de 20 MB.',
+    }[err.code] || 'Não foi possível receber os arquivos.';
+    return res.status(400).json({ erro: texto });
+  }
+  res.status(500).json({ erro: 'Erro interno.' });
+});
+
 app.listen(PORTA, '127.0.0.1', () => console.log(`Sistema APMF em http://localhost:${PORTA}`));
