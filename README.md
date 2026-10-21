@@ -11,7 +11,7 @@ Você escolhe os PDFs das requisições e o sistema devolve uma planilha Excel p
 2. Escolha os PDFs (vários de uma vez) e clique em **Gerar planilha**. O Excel é baixado.
 
 ## Colunas da planilha
-Tipo, Número, Fornecedor/Prestador, Discriminação, Justificativa, Categoria e Valor, com uma linha de Total no fim.
+Tipo, Número, Fornecedor/Prestador, Discriminação, Justificativa, Categoria (com o número, como "7-Despesas Diversas"), Valor e Data da requisição, com uma linha de Total no fim.
 Um PDF que não puder ser lido aparece na planilha como "NÃO LIDO: nome do arquivo".
 
 ## Dados

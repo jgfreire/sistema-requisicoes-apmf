@@ -1,21 +1,26 @@
 // Leitura local da requisição (PDF). Se não conseguir ler, devolve uma linha sinalizada para conferência no Excel.
 const local = require('./leitorLocal');
 
-const CATEGORIAS = ['Alimentação', 'Bens Permanentes', 'Materiais de Consumo', 'Obras, Manutenções e Transportes',
-  'Prestadores de Serviço e Encargos', 'Projetos e Eventos', 'Despesas Diversas'];
+// Categorias do formulário da APMF, com o número que vem junto no documento.
+const CATEGORIAS = ['1-Alimentação', '2-Bens Permanentes', '3-Materiais de Consumo', '4-Obras, Manutenções e Transportes',
+  '5-Prestadores de Serviço e Encargos', '6-Projetos e Eventos', '7-Despesas Diversas'];
 
 const normalizar = (t) => String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const semNumero = (c) => c.replace(/^\d+\s*-\s*/, '');
 const SERVICO = /\b(servic\w*|conserto|reparo|manutenc\w*|instalac\w*|mao de obra|prestac\w*|locac\w*|dedetizac\w*|limpeza de|pintura|frete|transporte)\b/;
 
 // Só usados no formato genérico (fora do layout da APMF).
 const detectarTipo = (texto) => (SERVICO.test(normalizar(texto)) ? 'Serviço' : 'Material');
 function detectarCategoria(texto) {
   const t = normalizar(texto);
-  return CATEGORIAS.find((c) => t.includes(normalizar(c))) || '';
+  return CATEGORIAS.find((c) => t.includes(normalizar(semNumero(c)))) || '';
 }
 
-// Categoria lida do PDF -> nome oficial da lista (ignora diferenças de acento e maiúsculas).
-const nomeOficial = (lida) => CATEGORIAS.find((c) => normalizar(c) === normalizar(lida)) || lida;
+// Categoria lida do PDF ("7-Despesas Diversas") -> forma oficial da lista, com número (ignora acento e maiúsculas).
+function nomeOficial(lida) {
+  const nome = normalizar(semNumero(String(lida || '')));
+  return CATEGORIAS.find((c) => normalizar(semNumero(c)) === nome) || lida;
+}
 
 async function lerRequisicao(nomeArquivo, buffer) {
   try {
@@ -25,7 +30,7 @@ async function lerRequisicao(nomeArquivo, buffer) {
     return { itens, aviso: '' };
   } catch {
     return {
-      itens: [{ tipo: '', numero: '', fornecedor: '', discriminacao: `NÃO LIDO: ${nomeArquivo}`, justificativa: '', categoria: '', valor: null }],
+      itens: [{ data: '', tipo: '', numero: '', fornecedor: '', discriminacao: `NÃO LIDO: ${nomeArquivo}`, justificativa: '', categoria: '', valor: null }],
       aviso: 'não foi possível ler o arquivo (precisa ser PDF com texto); a linha dele ficou sinalizada na planilha.',
     };
   }

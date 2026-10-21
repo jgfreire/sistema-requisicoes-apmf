@@ -27,8 +27,23 @@ function categoriaMarcada(linhas) {
   const ini = linhas.findIndex((l) => /^CATEGORIA:/i.test(l));
   if (ini < 0) return '';
   const bloco = linhas.slice(ini + 1, ini + 5).join(' ');
-  const re = /\(\s*([Xx]?)\s*\)\s*\d\s*-\s*(.+?)(?=\s*\(\s*[Xx]?\s*\)\s*\d|DISCRIMINA|$)/g;
-  for (const m of bloco.matchAll(re)) if (m[1]) return m[2].trim();
+  const re = /\(\s*([Xx]?)\s*\)\s*(\d)\s*-\s*(.+?)(?=\s*\(\s*[Xx]?\s*\)\s*\d|DISCRIMINA|$)/g;
+  for (const m of bloco.matchAll(re)) if (m[1]) return `${m[2]}-${m[3].trim()}`;
+  return '';
+}
+
+// Data da requisição, em dd/mm/aaaa: "Requisitado em 11/08/2026" ou, se faltar, "Anápolis/GO, 11 de agosto de 2026".
+const MESES = ['janeiro', 'fevereiro', 'marco', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+function dataRequisicao(linhas) {
+  for (const l of linhas) {
+    const m = l.match(/^Requisitado em\s+(\d{2}\/\d{2}\/\d{4})/i);
+    if (m) return m[1];
+  }
+  for (const l of linhas) {
+    const m = l.normalize('NFD').replace(/[̀-ͯ]/g, '').match(/^[^,]+\/[A-Z]{2},\s*(\d{1,2}) de (\w+) de (\d{4})/i);
+    const mes = m && MESES.indexOf(m[2].toLowerCase());
+    if (m && mes >= 0) return `${m[1].padStart(2, '0')}/${String(mes + 1).padStart(2, '0')}/${m[3]}`;
+  }
   return '';
 }
 
@@ -90,7 +105,8 @@ async function ler(buffer) {
     const categoria = categoriaMarcada(linhas);
     const disc = discriminacao(linhas);
     const just = justificativa(linhas);
-    itens = rows.map((r) => ({ categoria, tipo: r.tipo, numero: r.numero, fornecedor: r.fornecedor, valor: r.valor, discriminacao: disc, justificativa: just }));
+    const data = dataRequisicao(linhas);
+    itens = rows.map((r) => ({ data, categoria, tipo: r.tipo, numero: r.numero, fornecedor: r.fornecedor, valor: r.valor, discriminacao: disc, justificativa: just }));
   } else {
     itens = lerGenerico(linhas);
   }
