@@ -4,3 +4,6 @@
 *.db-shm
 node_modules/
 .claude/
+.ocr-cache/
+erros-leitura.log
+saida/

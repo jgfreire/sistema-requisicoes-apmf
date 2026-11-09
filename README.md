@@ -10,6 +10,9 @@ Você escolhe os PDFs das requisições e o sistema devolve uma planilha Excel p
 1. No primeiro acesso, crie o administrador. Depois, o administrador cadastra os outros usuários no link **Cadastrar usuários**, no topo da tela.
 2. Escolha os PDFs (vários de uma vez) e clique em **Gerar planilha**. O Excel é baixado.
 
+## PDF sem texto (Microsoft Print to PDF)
+Se o PDF não tiver texto (por exemplo, foi gerado pela impressora virtual "Microsoft Print to PDF"), o sistema lê por OCR, também sem internet. É mais lento (alguns segundos por PDF) e pode errar letras: a tela avisa quando isso acontece, e vale conferir a planilha.
+
 ## Colunas da planilha
 Tipo, Número, Fornecedor/Prestador, Discriminação, Justificativa, Categoria (com o número, como "7-Despesas Diversas"), Valor e Data da requisição, com uma linha de Total no fim.
 Um PDF que não puder ser lido aparece na planilha como "NÃO LIDO: nome do arquivo".

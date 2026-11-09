@@ -17,21 +17,37 @@ function detectarCategoria(texto) {
 }
 
 // Categoria lida do PDF ("7-Despesas Diversas") -> forma oficial da lista, com número (ignora acento e maiúsculas).
+// O número vale mais que o nome: se o nome veio truncado ou com erro de OCR, o número ainda indica a categoria certa.
 function nomeOficial(lida) {
+  const numero = String(lida || '').match(/^\s*([1-7])\s*-/);
+  if (numero) return CATEGORIAS[Number(numero[1]) - 1];
   const nome = normalizar(semNumero(String(lida || '')));
   return CATEGORIAS.find((c) => normalizar(semNumero(c)) === nome) || lida;
 }
 
 async function lerRequisicao(nomeArquivo, buffer) {
   try {
-    const itens = (await local.ler(buffer)).map(({ generico, ...i }) => (generico
+    const { itens: lidos, faltando, ocr } = await local.ler(buffer);
+    const itens = lidos.map(({ generico, ...i }) => (generico
       ? { ...i, tipo: detectarTipo(i.justificativa), categoria: detectarCategoria(i.justificativa) }
       : { ...i, categoria: nomeOficial(i.categoria) }));
-    return { itens, aviso: '' };
-  } catch {
+    const avisos = [];
+    if (ocr) avisos.push('o PDF não tem texto (foi impresso como desenho) e foi lido por OCR; confira os dados na planilha');
+    if (faltando.length) avisos.push(`não encontrei: ${faltando.join(', ')}`);
+    return { itens, aviso: avisos.join('; ') };
+  } catch (e) {
+    const motivo = e && e.message ? e.message : String(e);
+    // Registra o motivo e o que o sistema conseguiu enxergar no PDF, para diagnóstico (arquivo local, fora do GitHub).
+    try {
+      const fs = require('fs'); const path = require('path');
+      const texto = (e && e.linhas ? e.linhas.slice(0, 60).join('\n') : '(sem texto lido)');
+      fs.appendFileSync(path.join(__dirname, '..', 'erros-leitura.log'),
+        `\n===== ${new Date().toLocaleString('pt-BR')} | ${nomeArquivo}\nMotivo: ${motivo}\n${texto}\n`);
+    } catch { /* o log é opcional */ }
+    console.error(`[leitura] ${nomeArquivo}: ${motivo}`);
     return {
-      itens: [{ data: '', tipo: '', numero: '', fornecedor: '', discriminacao: `NÃO LIDO: ${nomeArquivo}`, justificativa: '', categoria: '', valor: null }],
-      aviso: 'não foi possível ler o arquivo (precisa ser PDF com texto); a linha dele ficou sinalizada na planilha.',
+      itens: [{ data: '', tipo: '', numero: '', fornecedor: '', discriminacao: `NÃO LIDO: ${nomeArquivo} (${motivo})`, justificativa: '', categoria: '', valor: null }],
+      aviso: `não foi possível ler o arquivo: ${motivo}. A linha dele ficou sinalizada na planilha.`,
     };
   }
 }
