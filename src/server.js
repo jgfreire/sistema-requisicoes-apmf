@@ -92,4 +92,5 @@ app.use((err, req, res, next) => {
   res.status(500).json({ erro: 'Erro interno.' });
 });
 
-app.listen(PORTA, '127.0.0.1', () => console.log(`Sistema APMF em http://localhost:${PORTA}`));
+// Escuta em 0.0.0.0 (todas as interfaces) de propósito: o sistema roda na rede e outros computadores precisam acessá-lo.
+app.listen(PORTA, '0.0.0.0', () => console.log(`Sistema APMF em http://localhost:${PORTA} (acessível na rede pela porta ${PORTA})`));
